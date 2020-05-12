@@ -27,24 +27,18 @@ function init(webViewWidget, jsFile, supportVConsole) {
         onPageFinished: (webView, curUrl)=>{
             console.log('页面加载完成');
             if (supportVConsole) {
-                // log(vConsole)
-                vConsole += ";const vconsole_temp = new VConsole();";
-                callJavaScript(webView, vConsole, ()=>{
-                    // webView.loadUrl("javascript:new VConsole();"); 
-                });    
-                // webView.loadUrl("javascript:" + vConsole);            
+                callJavaScript(webView, vConsole + ";new VConsole();", (val)=>{
+                    console.log("注入vconsole返回： " + val);
+                }); 
             }
+            // 注入 jsBridge
             callJavaScript(webView, jsBridge, null);
-            // webView.loadUrl("javascript:" + jsBridge);
-            // console.log("注入jsBridge成功");
             jsFile.forEach((file, index) => {
                 try {
                     let js = files.read(file);
                     callJavaScript(webView, js, (val) => {
                         // console.log("脚本注入成功: " + file);
                     });
-                    // webView.loadUrl("javascript:" + js);
-                    // console.log("注入脚本: " + file);
                 } catch (e) {
                     toastLog("脚本注入失败: " + file);
                     console.trace(e);
@@ -87,7 +81,7 @@ function init(webViewWidget, jsFile, supportVConsole) {
             let url = webResourceRequest.getUrl();
             let errorCode = webResourceError.getErrorCode();
             let description = webResourceError.getDescription();
-            console.trace(errorCode + " " + description)
+            console.trace(errorCode + " " + description + " " + url);
             if (webErrorHandler) {
                 let handleFile = webErrorHandler[errorCode];
                 log(handleFile)
