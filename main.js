@@ -23,7 +23,7 @@ ui.loadMdBtn.on("click", ()=>{
 ui.loadHtmlBtn.on("click", ()=>{
     webViewExpand.init(ui.webView, ["expand/inject/demo.ts"], true);
     ui.webView.loadUrl("https://cn.bing.com/");
-    ui.webView.loadUrl("https://m.baidu.com/");
+    // ui.webView.loadUrl("https://m.baidu.com/");
     // ui.webView.loadUrl("https://main.m.taobao.com/");
 });
 ui.consoleBtn.on("click", () => {
