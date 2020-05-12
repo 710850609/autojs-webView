@@ -1,0 +1,10 @@
+{
+    "name": "autojs-webView",
+    "main": "main.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "org.linbo.autojs.webView",
+    "versionName": "1.0.0",
+    "versionCode": 1
+}
