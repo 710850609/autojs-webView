@@ -27,9 +27,7 @@ function init(webViewWidget, jsFile, supportVConsole) {
         onPageFinished: (webView, curUrl)=>{
             console.log('页面加载完成');
             if (supportVConsole) {
-                callJavaScript(webView, vConsole + ";new VConsole();", (val)=>{
-                    console.log("注入vconsole返回： " + val);
-                }); 
+                callJavaScript(webView, vConsole + ";const vconsole = new VConsole();", null); 
             }
             // 注入 jsBridge
             callJavaScript(webView, jsBridge, null);
