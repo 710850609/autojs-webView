@@ -1,14 +1,9 @@
 /** jsBridge交互处理逻辑实现 */
-
-/**
- * 处理逻辑例子
- */
-function toastAction(params) {
-    toast(params.msg);
-    return {msg: 'toast提示成功'};
+module.exports = {
+    handle: handle,
+    // 注册被调用方法，名称命名： cmd
+    toast: toastAction
 }
-
-
 /**
  * 命令调度入口
  * @param {命令} cmd 
@@ -23,8 +18,11 @@ function handle(cmd, params) {
     }
     return fun(params);
 }
-module.exports = {
-    handle: handle,
-    // 注册被调用方法，名称命名： cmd
-    toast: toastAction
+
+/**
+ * 处理逻辑例子： toast 提示
+ */
+function toastAction(params) {
+    toast(params.msg);
+    return {msg: 'toast提示成功'};
 }

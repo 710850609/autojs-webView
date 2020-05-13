@@ -18,30 +18,36 @@ let vConsole = files.read("expand/core/vconsole.min.ts");
 /**
  * 初始化，支持页面加载完时注入脚本
  * @param {*} webViewWidget webView控件
- * @param {*} jsFile   待注入的多个js文件路径，数组格式
+ * @param {*} jsFileList   待注入的多个js文件路径，数组格式
  * @param {*} supportVConsole   是否支持VConsole
  */
-function init(webViewWidget, jsFile, supportVConsole) {
+function init(webViewWidget, jsFileList, supportVConsole) {
     console.assert(webViewWidget != null, "webView控件为空");
     webViewWidget.webViewClient = new JavaAdapter(android.webkit.WebViewClient, {
         onPageFinished: (webView, curUrl)=>{
             console.log('页面加载完成');
-            if (supportVConsole) {
-                callJavaScript(webView, vConsole + ";const vconsole = new VConsole();", null); 
-            }
-            // 注入 jsBridge
-            callJavaScript(webView, jsBridge, null);
-            jsFile.forEach((file, index) => {
-                try {
-                    let js = files.read(file);
-                    callJavaScript(webView, js, (val) => {
-                        // console.log("脚本注入成功: " + file);
-                    });
-                } catch (e) {
-                    toastLog("脚本注入失败: " + file);
-                    console.trace(e);
+            try {
+                if (supportVConsole) {
+                    callJavaScript(webView, vConsole + ";const vconsole = new VConsole();", null); 
                 }
-            });
+                // 注入 jsBridge
+                callJavaScript(webView, jsBridge, null);
+                if (jsFileList instanceof Array) {
+                    jsFileList.forEach((file, index) => {
+                        try {
+                            let js = files.read(file);
+                            callJavaScript(webView, js, (val) => {
+                                // console.log("脚本注入成功: " + file);
+                            });
+                        } catch (e) {
+                            toastLog("脚本注入失败: " + file);
+                            console.trace(e);
+                        }
+                    });
+                }
+            } catch(e) {
+                console.trace(e)
+            }
         },
         shouldOverrideUrlLoading: (webView, curUrl) => {
             let url = curUrl.a.a;
