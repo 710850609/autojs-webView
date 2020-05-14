@@ -146,11 +146,13 @@ function showMarkdown(webViewWidget, markdownFile) {
     "<div id='content'></div>\r" +
     "<script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script> \r" +
     "<script>\r" +
-    "    document.getElementById('content').innerHTML =\r" +
-    "    marked(`" + markdownStr + "`,{breaks: true});\r" +
+    "    let content = `\n" + markdownStr.replace(/`/g, "\\`") + "\n`;" + 
+    "    document.getElementById('content').innerHTML = marked(content,{breaks: true});\r" +
     "</script> \r" +
     "</body>\r" +
     "</html>");
+    
+    log(unencodedHtml)
     let encodedHtml = java.util.Base64.getEncoder().encodeToString(unencodedHtml.getBytes());
     webViewWidget.loadData(encodedHtml, "text/html", "base64");
 }
