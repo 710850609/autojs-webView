@@ -10,12 +10,13 @@ module.exports = {
  * @param {参数} params 
  */
 function handle(cmd, params) {
-    console.log('处理 cmd = %s, params = %s', cmd, JSON.stringify(params));
+    console.log('bridgeHandler处理 cmd=%s, params=%s', cmd, JSON.stringify(params));
     // 调度方法命名
     let fun = this[cmd];
     if (!fun) {
         throw new Error("cmd= " + cmd + " 没有定义实现");
     }
+    log(fun(params))
     return fun(params);
 }
 

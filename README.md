@@ -8,7 +8,7 @@ autojs的webView实现，支持初始化脚本注入、jsBridge两端互调
 -   4 支持jsBridge，H5端调用安卓端autojs方法
 -   5 支持inent url打开app页面
 -   6 支持vconsole
-    * 存在部分页面不兼容vsconsole，如：https://m.baidu.com/ 
+    * 存在部分页面不兼容vsconsole，如：https://m.baidu.com/  https://github.com/
 
 ## 二、项目结构说明
 ```javascript

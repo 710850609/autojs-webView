@@ -22,9 +22,11 @@ ui.loadMdBtn.on("click", ()=>{
 });
 ui.loadHtmlBtn.on("click", ()=>{
     webViewExpand.init(ui.webView, ["expand/inject/demo.ts"], true);
+    // webViewExpand.init(ui.webView, [], true);
     // ui.webView.loadUrl("https://cn.bing.com/");
     // ui.webView.loadUrl("https://m.baidu.com/");
     ui.webView.loadUrl("https://main.m.taobao.com/");
+    // ui.webView.loadUrl("https://github.com/710850609/autojs-webView");
 });
 ui.consoleBtn.on("click", () => {
     app.startActivity("console");

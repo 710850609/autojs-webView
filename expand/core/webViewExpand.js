@@ -52,7 +52,22 @@ function init(webViewWidget, jsFileList, supportVConsole) {
         shouldOverrideUrlLoading: (webView, curUrl) => {
             let url = curUrl.a.a;
             try {
-                if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://")) {
+                if (url.startsWith("jsbridge://")) {
+                    let uris = url.split("/");
+                    let cmd = uris[2];
+                    let callId = uris[3];
+                    let params = java.net.URLDecoder.decode(uris[4], "UTF-8");
+                    console.log('AutoJs处理JavaScript调用请求: callId=%s, cmd=%s, params=%s', callId, cmd, params);
+                    let result = null;
+                    try {
+                        result = bridgeHandler.handle(cmd, JSON.parse(params));
+                    } catch(e) {
+                        console.trace(e);
+                        result = {message: e.message};
+                    }
+                    result = result || {};
+                    webView.loadUrl("javascript:window.Android.callback({'callId':" + callId + ", 'params': " + JSON.stringify(result) + "});");
+                } else if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://") || url.startsWith("ws://") || url.startsWith("wss://")) {
                     webView.loadUrl(url);
                 } else {
                     let uri = android.net.Uri.parse(url);
@@ -69,18 +84,18 @@ function init(webViewWidget, jsFileList, supportVConsole) {
                  }
             }
         },
-        shouldInterceptRequest: (webView, request) => {
-            try {
-                let uris = request.a.a.split("/");
-                if (uris[2] == "jsbridge") {
-                    let cmd = uris[3];
-                    let params = java.net.URLDecoder.decode(uris[4], "UTF-8");
-                    return handleJsBridge(cmd, params);
-                }
-            } catch (e) {
-                console.trace(e);
-            }
-        },
+        // shouldInterceptRequest: (webView, request) => {
+        //     try {
+        //         let uris = request.a.a.split("/");
+        //         if (uris[2] == "jsbridge") {
+        //             let cmd = uris[3];
+        //             let params = java.net.URLDecoder.decode(uris[4], "UTF-8");
+        //             return handleJsBridge(cmd, params);
+        //         }
+        //     } catch (e) {
+        //         console.trace(e);
+        //     }
+        // },
         onReceivedError: (webView, webResourceRequest , webResourceError ) => {
             let url = webResourceRequest.getUrl();
             let errorCode = webResourceError.getErrorCode();
@@ -106,25 +121,24 @@ function init(webViewWidget, jsFileList, supportVConsole) {
  * JavaScript bridge 请求处理
  * @returns android.webkit.WebResourceResponse
  */
-function handleJsBridge(cmd, params) {
-    console.log('安卓接收到JavaScript调用请求: cmd=%s, params=%s', cmd, params);
-    let data = {};
-    try {
-        data = bridgeHandler.handle(cmd, JSON.parse(params));
-    } catch(e) {
-        data = {message: e.message};
-    }
-    data = JSON.stringify(data || {});
-    let bytes = new java.lang.String(data.toString()).getBytes();
-    let response = new android.webkit.WebResourceResponse("application/json", "utf-8", new java.io.ByteArrayInputStream(bytes));
-    let headers = new java.util.HashMap();
-    // 设置允许跨域
-    headers.put("Access-Control-Allow-Origin", "*");
-    headers.put("Access-Control-Allow-Methods", "*");
-    headers.put("Access-Control-Allow-Headers", "*");
-    response.setResponseHeaders(headers);
-    return response;
-}
+// function handleJsBridge(cmd, params) {
+//     let data = null;
+//     try {
+//         data = bridgeHandler.handle(cmd, JSON.parse(params));
+//     } catch(e) {
+//         data = {message: e.message};
+//     }
+//     data = JSON.stringify(data || {});
+//     let bytes = new java.lang.String(data.toString()).getBytes();
+//     let response = new android.webkit.WebResourceResponse("application/json", "utf-8", new java.io.ByteArrayInputStream(bytes));
+//     let headers = new java.util.HashMap();
+//     // 设置允许跨域
+//     headers.put("Access-Control-Allow-Origin", "*");
+//     headers.put("Access-Control-Allow-Methods", "*");
+//     headers.put("Access-Control-Allow-Headers", "*");
+//     response.setResponseHeaders(headers);
+//     return response;
+// }
 
 /**
  * 渲染markdown文件
@@ -151,8 +165,6 @@ function showMarkdown(webViewWidget, markdownFile) {
     "</script> \r" +
     "</body>\r" +
     "</html>");
-    
-    log(unencodedHtml)
     let encodedHtml = java.util.Base64.getEncoder().encodeToString(unencodedHtml.getBytes());
     webViewWidget.loadData(encodedHtml, "text/html", "base64");
 }
