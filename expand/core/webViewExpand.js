@@ -50,7 +50,10 @@ function init(webViewWidget, jsFileList, supportVConsole) {
             }
         },
         shouldOverrideUrlLoading: (webView, curUrl) => {
-            let url = curUrl.a.a;
+            let url = (request.a && request.a.a) || (request.url);
+            if (url instanceof android.net.Uri) {
+                url = url.toString();
+            }
             try {
                 if (url.startsWith("jsbridge://")) {
                     let uris = url.split("/");
