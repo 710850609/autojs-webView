@@ -9,6 +9,8 @@ autojs的webView实现，支持初始化脚本注入、jsBridge两端互调
 -   5 支持inent url打开app页面
 -   6 支持vconsole
     * 存在部分页面不兼容vsconsole，如：https://m.baidu.com/  https://github.com/
+-   7 支持debug模式
+    * 需要在电脑Chrome内核浏览器上访问 chrome://inspect/#devices    
 
 ## 二、项目结构说明
 ```javascript

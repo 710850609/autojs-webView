@@ -23,6 +23,8 @@ let vConsole = files.read("expand/core/vconsole.min.ts");
  */
 function init(webViewWidget, jsFileList, supportVConsole) {
     console.assert(webViewWidget != null, "webView控件为空");
+    // 开启debug模式，需要在电脑浏览器上访问 chrome://inspect/#devices
+    android.webkit.WebView.setWebContentsDebuggingEnabled(true);
     webViewWidget.webViewClient = new JavaAdapter(android.webkit.WebViewClient, {
         onPageFinished: (webView, curUrl)=>{
             console.log('页面加载完成');
