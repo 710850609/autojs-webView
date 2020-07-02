@@ -15,6 +15,10 @@ let webErrorHandler = require(files.cwd() + "/expand/handler/webErrorHandler.js"
 let jsBridge = files.read("expand/core/jsBridge.ts");
 // let vConsole = files.read("expand/core/vConsole.ts");
 let vConsole = files.read("expand/core/vconsole.min.ts");
+
+// 开启debug模式，需要在电脑浏览器上访问 chrome://inspect/#devices
+android.webkit.WebView.setWebContentsDebuggingEnabled(true);
+
 /**
  * 初始化，支持页面加载完时注入脚本
  * @param {*} webViewWidget webView控件
@@ -23,8 +27,6 @@ let vConsole = files.read("expand/core/vconsole.min.ts");
  */
 function init(webViewWidget, jsFileList, supportVConsole) {
     console.assert(webViewWidget != null, "webView控件为空");
-    // 开启debug模式，需要在电脑浏览器上访问 chrome://inspect/#devices
-    android.webkit.WebView.setWebContentsDebuggingEnabled(true);
     webViewWidget.webViewClient = new JavaAdapter(android.webkit.WebViewClient, {
         onPageFinished: (webView, curUrl)=>{
             console.log('页面加载完成');
@@ -51,12 +53,13 @@ function init(webViewWidget, jsFileList, supportVConsole) {
                 console.trace(e)
             }
         },
-        shouldOverrideUrlLoading: (webView, curUrl) => {
-            let url = (request.a && request.a.a) || (request.url);
-            if (url instanceof android.net.Uri) {
-                url = url.toString();
-            }
+        shouldOverrideUrlLoading: (webView, request) => {
+            let url = '';
             try {
+                url = (request.a && request.a.a) || (request.url);
+                if (url instanceof android.net.Uri) {
+                    url = url.toString();
+                }
                 if (url.startsWith("jsbridge://")) {
                     let uris = url.split("/");
                     let cmd = uris[2];
@@ -75,8 +78,14 @@ function init(webViewWidget, jsFileList, supportVConsole) {
                 } else if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://") || url.startsWith("ws://") || url.startsWith("wss://")) {
                     webView.loadUrl(url);
                 } else {
-                    let uri = android.net.Uri.parse(url);
-                    app.startActivity(new Intent(Intent.ACTION_VIEW).setData(uri).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                    confirm("允许网页打开APP？").then(value=>{
+                        //当点击确定后会执行这里, value为true或false, 表示点击"确定"或"取消"
+                        if (value) {
+                            importPackage(android.net);
+                            let uri = Uri.parse(url);
+                            app.startActivity(new Intent(Intent.ACTION_VIEW).setData(uri).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                        }
+                    });
                 }
                 // 返回true代表自定义处理，返回false代表触发webview加载
                 return true;
