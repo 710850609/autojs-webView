@@ -3,8 +3,9 @@ var color = "#009688";
 ui.layout(
 <vertical>
     <horizontal h="300px">
-        <button text="加载本地MarkDown文件" id="loadMdBtn" style="Widget.AppCompat.Button.Colored" w="auto" />
-        <button text="加载网页" id="loadHtmlBtn" style="Widget.AppCompat.Button.Colored" w="auto" />
+        <button text="MarkDown" id="loadMdBtn" style="Widget.AppCompat.Button.Colored" w="auto" />
+        <button text="远程网页" id="loadHtmlBtn" style="Widget.AppCompat.Button.Colored" w="auto" />
+        <button text="本地网页" id="loadLocalHtmlBtn" style="Widget.AppCompat.Button.Colored" w="auto" />
         <button text="控制台" id="consoleBtn" style="Widget.AppCompat.Button.Colored" w="auto" />
     </horizontal>
     <vertical h="auto" w="*">
@@ -30,4 +31,10 @@ ui.loadHtmlBtn.on("click", ()=>{
 });
 ui.consoleBtn.on("click", () => {
     app.startActivity("console");
+});
+ui.loadLocalHtmlBtn.on('click', () => {
+    
+    webViewExpand.init(ui.webView, [], false);
+    let path = "file:" + files.path("index.html");
+    ui.webView.loadUrl(path);
 });
