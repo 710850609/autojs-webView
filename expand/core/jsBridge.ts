@@ -4,6 +4,7 @@ window.Android = function() {
         /** 判断是否存在，即使页面被删除了改frame，也可以动态增加 */
         if (!bridgeFrame) {
             bridgeFrame = document.createElement('iframe');
+            bridgeFrame.id = "jsBridgeFrame";
             bridgeFrame.style = "display: none";
             document.body.append(bridgeFrame);
         }
