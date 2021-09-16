@@ -35,7 +35,7 @@ window.Android = function() {
             console.debug(`JavaScript请求调用安卓端: cmd=${cmd}, params=${paramsStr}`);
             let jsBridgeFrame = getJsBridgeFrame();
             callId = setCallback(callback);
-            jsBridgeFrame.src = `jsbridge://${cmd}/${callId}/${encodeURI(paramsStr)}`;
+            jsBridgeFrame.src = `jsbridge://${cmd}/${callId}/${encodeURIComponent(paramsStr)}`;
         } catch (e) {
             if (callId) {
                 getCallback(callId);
